@@ -1,0 +1,10 @@
+server:
+  port: 3100
+
+db:
+  type: 'postgres'
+  port: 5433
+  database: 'chat'
+
+jwt:
+  expiresIn: 3600

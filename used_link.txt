@@ -1,0 +1,7 @@
+
+Apollo Subscription Tutorial:
+Dev: https://dev.to/thisdotmedia/graphql-subscriptions-with-nest-how-to-publish-across-multiple-running-servers-15e
+
+###########################################
+@ManyToMany table with custome column name:
+Github: https://github.com/typeorm/typeorm/issues/1224

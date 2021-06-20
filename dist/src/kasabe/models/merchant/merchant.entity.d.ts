@@ -1,0 +1,38 @@
+import { BaseEntity } from 'typeorm';
+import { Tag } from '../tag/tag.entity';
+import { Auth } from '../../../auth/auth/auth.entity';
+import { MerchantCategory } from '../merchant_category/merchant_category.entity';
+import { BuildMerchantInput } from './dto/create_merchant.input';
+import { Article } from '../article/article.entity';
+import { Relation } from '../relation/relation.entity';
+export declare class Merchant extends BaseEntity {
+    merchant_id: number;
+    auth?: Auth;
+    auth_id?: number;
+    article?: Article;
+    article_id?: number;
+    relations: Relation[];
+    merchant_title: string;
+    tiny_description: string;
+    long_description?: string;
+    contact_name: string;
+    instagram_url?: string;
+    number_call?: string;
+    number_whatsapp?: string;
+    number_telegram?: string;
+    bank_card_number?: string;
+    bank_card_details: string;
+    avatar_url?: string;
+    header_url?: string;
+    note?: string;
+    location: string;
+    created_at: Date;
+    updated_at: Date;
+    category?: MerchantCategory;
+    merchant_category_id?: number;
+    tags: Tag[];
+    rate_count?: string;
+    rate_avg?: string;
+    static of(rMerchant: BuildMerchantInput): Merchant;
+    checkDataValidation(): Promise<void>;
+}

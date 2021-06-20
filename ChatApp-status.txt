@@ -1,0 +1,50 @@
+### Chat App Project ###
+Date: 26 Aug 2020
+Folder Stage: 13_ChatApp_pg_redis-broker_redis-DB_toOne_toGroup_isOnline
+
+	
+
+TODO:
+19) UI
+18) unit testing
+17) authentication
+16) auzirazation in sendign msg; currently every-one can send message to every room
+15) redis as catch
+14) add other type of message: audioMsg, videoMsg, sticker
+13) remove following subscribers onBlur page from redis in-memory db
+
+
+
+Done:
+12) isOnline, isTyping, ...
+11) sending message: toServer, toOne, toGroup, 
+10) redis as in-memory db
+09) redis as broker
+08) save message in pgsql
+07) log APP_FLOW 
+06) real-time module for chat-app
+05) chatGateway
+04) socket.io
+03) websocket
+02) db initializer
+01) simple front-end UI
+00) database design for chat-app
+
+Base project is: 
+	* 05-Ecommerce __test-subscription
+	* LogRecket scalable nestjs socket.io
+
+How to run project: 
+ $ npm run d
+
+
+Only we have serverside
+
+we have:
++ redis [as in_memory db]
++ redis [as broker]
++ socket.io
++ websocket
++ graphql
++ nest
++ typeorm

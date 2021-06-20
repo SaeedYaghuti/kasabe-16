@@ -1,0 +1,1 @@
+{"version":3,"file":"socket-state.module.js","sourceRoot":"","sources":["../../../../src/realtime/socket-state/socket-state.module.ts"],"names":[],"mappings":";;;;;;;;AAAA,2CAAuC;AACvC,iEAA2D;AAM3D,IAAa,iBAAiB,GAA9B,MAAa,iBAAiB;CAAG,CAAA;AAApB,iBAAiB;IAJ7B,eAAM,CAAC;QACN,SAAS,EAAE,CAAC,yCAAkB,CAAC;QAC/B,OAAO,EAAE,CAAC,yCAAkB,CAAC;KAC9B,CAAC;GACW,iBAAiB,CAAG;AAApB,8CAAiB"}

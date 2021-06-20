@@ -1,0 +1,382 @@
+# Graphql:
+
+# http://localhost:3100/graphq
+
+# Test Query
+query {
+  testQuery(message: "Hello") {
+    message
+  }
+}
+
+
+# Test Mutation
+mutation {
+  testMutation(message: "Hellor every one") {
+    message
+  }
+}
+
+# Product_Category_Master
+mutation {
+  createProductCategory(category: {
+    category_name: "Master",
+    category_discription: "Grandpa for all products",
+    parent: 1,
+    isActive: true
+  }) {
+    id
+    category_name
+    category_discription
+    children {
+      id
+      category_name
+      category_discription
+      picture_url
+      isActive
+    }
+    parent {
+      id
+      category_name
+      category_discription
+      picture_url
+      isActive
+    }
+    flag_product_id {
+      product_id
+      sku
+      supplier_sku
+      product_category_id
+      product_name
+      msrp
+      price
+      price_currency
+      currency_symbole
+      unit_weight_title
+      unit_weight
+      is_discount
+      discount
+      ranking
+      reorder_level
+      is_active
+    }
+    picture_url
+    isActive
+    products {
+      product_id
+      sku
+      supplier_sku
+      product_category_id
+      product_name
+      msrp
+      price
+      price_currency
+      currency_symbole
+      unit_weight_title
+      unit_weight
+      is_discount
+      discount
+      ranking
+      reorder_level
+      is_active
+    }
+  }
+}
+
+# Product_Category_Body_Care
+mutation {
+  createProductCategory(category: {
+    category_name: "Body Care",
+    category_discription: "Includes perfume, lotion, cream, oil, ...",
+    parent: 1,
+    isActive: true
+  }) {
+    id
+    category_name
+    category_discription
+    children {
+      id
+      category_name
+      category_discription
+      picture_url
+      isActive
+    }
+    parent {
+      id
+      category_name
+      category_discription
+      picture_url
+      isActive
+    }
+    flag_product_id {
+      product_id
+      sku
+      supplier_sku
+      product_category_id
+      product_name
+      msrp
+      price
+      price_currency
+      currency_symbole
+      unit_weight_title
+      unit_weight
+      is_discount
+      discount
+      ranking
+      reorder_level
+      is_active
+    }
+    picture_url
+    isActive
+    products {
+      product_id
+      sku
+      supplier_sku
+      product_category_id
+      product_name
+      msrp
+      price
+      price_currency
+      currency_symbole
+      unit_weight_title
+      unit_weight
+      is_discount
+      discount
+      ranking
+      reorder_level
+      is_active
+    }
+  }
+}
+
+
+# Product_Category_Perfumes
+mutation {
+  createProductCategory(category: {
+    category_name: "Perfumes",
+    category_discription: "Include perfumes, bukhoor, ...",
+    parent: 2,
+    isActive: true
+  }) {
+    id
+    category_name
+    category_discription
+    children {
+      id
+      category_name
+      category_discription
+      picture_url
+      isActive
+    }
+    parent {
+      id
+      category_name
+      category_discription
+      picture_url
+      isActive
+    }
+    flag_product_id {
+      product_id
+      sku
+      supplier_sku
+      product_category_id
+      product_name
+      msrp
+      price
+      price_currency
+      currency_symbole
+      unit_weight_title
+      unit_weight
+      is_discount
+      discount
+      ranking
+      reorder_level
+      is_active
+    }
+    picture_url
+    isActive
+    products {
+      product_id
+      sku
+      supplier_sku
+      product_category_id
+      product_name
+      msrp
+      price
+      price_currency
+      currency_symbole
+      unit_weight_title
+      unit_weight
+      is_discount
+      discount
+      ranking
+      reorder_level
+      is_active
+    }
+  }
+}
+
+# Product_Category_Versaci
+mutation {
+  createProductCategory(category: {
+    category_name: "versaci",
+    category_discription: "versaci perfumes, giftset,...",
+    parent: 3,
+    isActive: true
+  }) {
+    id
+    category_name
+    category_discription
+    children {
+      id
+      category_name
+      category_discription
+      picture_url
+      isActive
+    }
+    parent {
+      id
+      category_name
+      category_discription
+      picture_url
+      isActive
+    }
+    flag_product_id {
+      product_id
+      sku
+      supplier_sku
+      product_category_id
+      product_name
+      msrp
+      price
+      price_currency
+      currency_symbole
+      unit_weight_title
+      unit_weight
+      is_discount
+      discount
+      ranking
+      reorder_level
+      is_active
+    }
+    picture_url
+    isActive
+    products {
+      product_id
+      sku
+      supplier_sku
+      product_category_id
+      product_name
+      msrp
+      price
+      price_currency
+      currency_symbole
+      unit_weight_title
+      unit_weight
+      is_discount
+      discount
+      ranking
+      reorder_level
+      is_active
+    }
+  }
+}
+
+# Get Product_Category
+query {
+  getProductCategoryById(category_id: 1) {
+    id
+    category_name
+    category_discription
+    children {
+      id
+      category_name
+      category_discription
+      picture_url
+      isActive
+    }
+    parent {
+      id
+      category_name
+      category_discription
+      picture_url
+      isActive
+    }
+    flag_product_id {
+      product_id
+      sku
+      supplier_sku
+      product_category_id
+      product_name
+      msrp
+      price
+      price_currency
+      currency_symbole
+      unit_weight_title
+      unit_weight
+      is_discount
+      discount
+      ranking
+      reorder_level
+      is_active
+    }
+    picture_url
+    isActive
+    products {
+      product_id
+      sku
+      supplier_sku
+      product_category_id
+      product_name
+      msrp
+      price
+      price_currency
+      currency_symbole
+      unit_weight_title
+      unit_weight
+      is_discount
+      discount
+      ranking
+      reorder_level
+      is_active
+    }
+  }
+}
+
+# Create Product
+mutation {
+  createProduct(product: {
+    sku: "3346",
+    supplier_sku:"tomford02",
+    product_category_id: 2,
+    product_name: "TOM FROD OMBRE LEATHER EDP 100ML",
+    msrp: 65,
+    price: 55,
+    price_currency: "Omani Riyal",
+    currency_symbole: "OMR",
+    unit_weight_title: "KG",
+    unit_weight: 0.4,
+    is_discount: true,
+    discount: 0.1,
+    ranking: 1,
+    reorder_level: 3,
+    is_active: true
+  }) {
+    product_id
+    sku
+    supplier_sku
+    product_category_id
+    product_name
+    msrp
+    price
+    price_currency
+    currency_symbole
+    unit_weight_title
+    unit_weight
+    is_discount
+    discount
+    ranking
+    reorder_level
+    is_active
+  }
+}

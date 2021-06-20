@@ -1,0 +1,15 @@
+F12 go to difinition
+Alt + LeftArrow back 
+
+Ctrl+Shift+L Select all occurrences of current selection  similar method (multiple )
+Alt+click
+
+alt+c to toggle case sensitivity
+alt+w to toggle whole words
+
+ctrl+u that undoes the last cursor selection
+
+HSUC tells me immediately where ctrl-d will go
+HSUC tells me immediately what matches there are
+at one point near the end I use ctrl-f2 too, to quickly select all matches.
+I do all of this without any other visual indicators except HSUC

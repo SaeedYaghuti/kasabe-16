@@ -1,0 +1,47 @@
+type Mutation {
+
+    supplierTestMutation ( message: String!): Test!
+    
+    createSupplier(supplier: CreateSupplierInput!): Supplier! 
+    updateSupplier(supplier: UpdateSupplierInput!): Supplier!
+
+}
+
+type Query {
+    supplierTestQuery( message: String!): Test!
+    getSupplierById(supplier_id: Int!): Supplier!
+}
+
+
+# Supplier
+input CreateSupplierInput {
+    supplier_name: String!
+    contact_name: String!
+    contact_title: String!
+    url: String
+    logo: String
+    note: String
+    our_id: String
+}
+input UpdateSupplierInput {
+    supplier_id: Int!
+    supplier_name: String!
+    contact_name: String!
+    contact_title: String!
+    url: String
+    logo: String
+    note: String
+    our_id: String
+}
+type Supplier {
+    supplier_id: Int!
+    person: Person
+    person_id: Int!
+    supplier_name: String!
+    contact_name: String!
+    contact_title: String!
+    url: String
+    logo: String
+    note: String
+    our_id: String
+}

@@ -1,0 +1,37 @@
+How to upgdrade all package:
+$ npm install -g npm-check-updates
+$ ncu -u
+$ npm install
+##########################################
+Socket.io Appolo
+npm i @nestjs/graphql apollo-server-express graphql-tools graphql
+graphql-subscriptions
+
+##########################################
+#Malik
+GraphQL
+$ npm i --save @nestjs/graphql apollo-server-express graphql-tools graphql
+
+Passport 
+$ npm i --save @nestjs/passport passport passport-jwt
+$ npm i --save-dev @types/passport
+
+Pipes Validation
+$ npm i --save class-validator class-transformer
+##########################################
+
+#Ariel
+Envirenmont Varables
+$ npm i -g win-node-env
+$ npm i --save config
+==========================
+JWT
+$ npm i --save @nestjs/jwt @nestjs/passport passport passport-jwt
+===========================
+#bcrypt password
+$ npm i --save bcryptjs
+$ npm i --save-dev @types/bcryptjs
+
+==========================
+#postgresql and TypeOrm
+$ npm i --save @nestjs/typeorm typeorm pg

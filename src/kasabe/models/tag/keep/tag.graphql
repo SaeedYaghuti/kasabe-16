@@ -1,0 +1,33 @@
+
+type Mutation {
+    tagTestMutation ( message: String!): Test!
+    createTag(tag: BuildTagInput!): Tag! 
+    updateTag(tag: UpdateTagInput!): Tag! 
+
+}
+
+type Query {
+    tagTestQuery( message: String!): Test!
+    getTagById(tag_id: Int!): Tag!
+}
+
+type Subscription {
+  tagCreated: Tag
+}
+
+# Tag
+input BuildTagInput {
+    tag_title: String!
+    tag_description: String!
+}
+input UpdateTagInput {
+    tag_id: Int!
+    tag_title: String!
+    tag_description: String!
+}
+type Tag {
+    tag_id: Int!
+    tag_title: String!
+    tag_description: String!
+    products: [ Product ]
+}

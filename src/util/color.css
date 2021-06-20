@@ -1,0 +1,96 @@
+body {
+    color: #5c627cc0,
+
+}
+body {
+    color: #82AAFF,
+
+}
+.alert {
+    color: #FF2D00,
+
+}
+.warn {
+    color:#FF8C00,
+
+}
+.todo {
+    color: #ff7af4,
+
+}
+.question {
+    color: #3498DB,
+
+}
+
+
+.important {
+    color:#98C379,
+
+}
+.describe {
+    color:#bbcfcf,
+    
+}
+.arraw {
+    color:#eeffff8a;
+    /* background	#212121
+    contrast ratio	15.63 */
+    
+}
+
+
+/* original one 
+// ! alert "#FF2D00"
+// todo color: "#FF8C00"
+// ? blue "#3498DB"
+//* important
+
+
+    {
+        "tag": "!",
+        "color": "#FF8C00", // !red
+        "strikethrough": false,
+        "underline": false,
+        "backgroundColor": "transparent",
+        "bold": false,
+        "italic": false
+    },
+    {
+        "tag": "?",
+        "color": "#3498DB", // ? blue
+        "strikethrough": false,
+        "underline": false,
+        "backgroundColor": "transparent",
+        "bold": false,
+        "italic": false
+    },
+    {
+        "tag": "//",
+        "color": "#474747",
+        "strikethrough": true,
+        "underline": false,
+        "backgroundColor": "transparent",
+        "bold": false,
+        "italic": false
+    },
+    {
+        "tag": "todo",
+        "color": "#FF8C00", // orange todo
+        "strikethrough": false,
+        "underline": false,
+        "backgroundColor": "transparent",
+        "bold": false,
+        "italic": false
+    },
+    {
+        "tag": "*",
+        "color": "#98C379",
+        "strikethrough": false,
+        "underline": false,
+        "backgroundColor": "transparent",
+        "bold": false,
+        "italic": false
+    }
+
+    */

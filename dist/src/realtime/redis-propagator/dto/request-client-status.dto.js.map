@@ -1,0 +1,1 @@
+{"version":3,"file":"request-client-status.dto.js","sourceRoot":"","sources":["../../../../../src/realtime/redis-propagator/dto/request-client-status.dto.ts"],"names":[],"mappings":";;;;;;;;;;;AAAA,8DAAoF;AAGpF,qDAAkG;AAIlG,MAAa,oBAAoB;CAQhC;AALG;IAFC,4BAAU,EAAE;IACZ,uBAAK,CAAC,EAAC,IAAI,EAAE,IAAI,EAAC,CAAC;;iEAC0B;AAI9C;IAFC,4BAAU,EAAE;IACZ,uBAAK,EAAE;;wDAC2B;AAPvC,oDAQC"}

@@ -1,0 +1,321 @@
+{
+    "accountID": -1,
+    "title": "Ledger Report",
+    "titleArb": "لجر ريبورت",
+    "titlePer": "گزارش گروههای حسابداری",
+    "parentAccountId": null,
+    "debit": 660,
+    "credit": 660,
+    "debit_remain": 420,
+    "credit_remain": 420,
+    "children": [
+        {
+            "accountID": 3,
+            "title": "Income",
+            "titleArb": "دخل",
+            "parentAccountId": null,
+            "debit": 120,
+            "credit": 240,
+            "debit_remain": 0,
+            "credit_remain": 120,
+            "children": [
+                {
+                    "accountID": 28,
+                    "title": "Direct Incomes",
+                    "titleArb": "مدخلات خاص",
+                    "titlePer": "درآمدهای عملیاتی",
+                    "parentAccountId": 3,
+                    "debit": 120,
+                    "credit": 240,
+                    "debit_remain": 0,
+                    "credit_remain": 120,
+                    "children": [
+                        {
+                            "accountID": 4,
+                            "title": "Sales",
+                            "titleArb": "مبیعات",
+                            "titlePer": "فروش",
+                            "parentAccountId": 28,
+                            "debit": 120,
+                            "credit": 240,
+                            "debit_remain": 0,
+                            "credit_remain": 120,
+                            "children": []
+                        },
+                        {
+                            "accountID": 30,
+                            "title": "Services",
+                            "titleArb": "خدمات",
+                            "titlePer": "سرویس و خدمات",
+                            "parentAccountId": 28,
+                            "debit": null,
+                            "credit": null,
+                            "debit_remain": null,
+                            "credit_remain": null,
+                            "children": []
+                        }
+                    ]
+                },
+                {
+                    "accountID": 29,
+                    "title": "Indirect Incomes",
+                    "titleArb": "مدخلات عام",
+                    "titlePer": "درآمدهای غیر عملیاتی",
+                    "parentAccountId": 3,
+                    "debit": 0,
+                    "credit": 0,
+                    "debit_remain": 0,
+                    "credit_remain": 0,
+                    "children": [
+                        {
+                            "accountID": 31,
+                            "title": "Bank Interest",
+                            "titleArb": "ربح بنک",
+                            "titlePer": "سود بانکی",
+                            "parentAccountId": 29,
+                            "debit": null,
+                            "credit": null,
+                            "debit_remain": null,
+                            "credit_remain": null,
+                            "children": []
+                        },
+                        {
+                            "accountID": 32,
+                            "title": "Investing Interest",
+                            "titleArb": "ربح استثمار",
+                            "titlePer": "سود سرمایه گذاری",
+                            "parentAccountId": 29,
+                            "debit": null,
+                            "credit": null,
+                            "debit_remain": null,
+                            "credit_remain": null,
+                            "children": []
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "accountID": 5,
+            "title": "Expenditure",
+            "titleArb": "مصاریف",
+            "parentAccountId": null,
+            "debit": 300,
+            "credit": 0,
+            "debit_remain": 300,
+            "credit_remain": 0,
+            "children": [
+                {
+                    "accountID": 20,
+                    "title": "Direct Expenses",
+                    "titleArb": "مصاریف خاص",
+                    "titlePer": "هزینه عملیاتی",
+                    "parentAccountId": 5,
+                    "debit": 300,
+                    "credit": 0,
+                    "debit_remain": 300,
+                    "credit_remain": 0,
+                    "children": [
+                        {
+                            "accountID": 6,
+                            "title": "Purchase",
+                            "titleArb": "مشتریات",
+                            "titlePer": "خرید",
+                            "parentAccountId": 20,
+                            "debit": 300,
+                            "credit": 0,
+                            "debit_remain": 300,
+                            "credit_remain": 0,
+                            "children": []
+                        },
+                        {
+                            "accountID": 22,
+                            "title": "Advertisement",
+                            "titleArb": " اعلان",
+                            "titlePer": "تبلیغات",
+                            "parentAccountId": 20,
+                            "debit": null,
+                            "credit": null,
+                            "debit_remain": null,
+                            "credit_remain": null,
+                            "children": []
+                        },
+                        {
+                            "accountID": 23,
+                            "title": "Purchase Expenses",
+                            "titleArb": "مصلریف شراء",
+                            "titlePer": "هزینه خرید",
+                            "parentAccountId": 20,
+                            "debit": null,
+                            "credit": null,
+                            "debit_remain": null,
+                            "credit_remain": null,
+                            "children": []
+                        },
+                        {
+                            "accountID": 27,
+                            "title": "Sale Expenses",
+                            "titleArb": "مصاریف بیع",
+                            "titlePer": "هزینه فروش",
+                            "parentAccountId": 20,
+                            "debit": null,
+                            "credit": null,
+                            "debit_remain": null,
+                            "credit_remain": null,
+                            "children": []
+                        }
+                    ]
+                },
+                {
+                    "accountID": 21,
+                    "title": "Indirect Expenses",
+                    "titleArb": "مصاریف عام",
+                    "titlePer": "هزینه های غیر عملیاتی",
+                    "parentAccountId": 5,
+                    "debit": null,
+                    "credit": null,
+                    "debit_remain": null,
+                    "credit_remain": null,
+                    "children": []
+                }
+            ]
+        },
+        {
+            "accountID": 9,
+            "title": "Assets",
+            "titleArb": "اصول",
+            "parentAccountId": null,
+            "debit": 240,
+            "credit": 120,
+            "debit_remain": 120,
+            "credit_remain": 0,
+            "children": [
+                {
+                    "accountID": 10,
+                    "title": "Banks",
+                    "titleArb": "بنوک",
+                    "titlePer": "بانک ها",
+                    "parentAccountId": 9,
+                    "debit": 0,
+                    "credit": 0,
+                    "debit_remain": 0,
+                    "credit_remain": 0,
+                    "children": [
+                        {
+                            "accountID": 11,
+                            "title": "NBO CBD",
+                            "titleArb": "بانک عمانی الوطنی",
+                            "titlePer": "بانک ان بی ا",
+                            "parentAccountId": 10,
+                            "debit": null,
+                            "credit": null,
+                            "debit_remain": null,
+                            "credit_remain": null,
+                            "children": []
+                        }
+                    ]
+                },
+                {
+                    "accountID": 12,
+                    "title": "Petty Cash",
+                    "titleArb": "بتی کش",
+                    "titlePer": "تن خواه",
+                    "parentAccountId": 9,
+                    "debit": null,
+                    "credit": null,
+                    "debit_remain": null,
+                    "credit_remain": null,
+                    "children": []
+                },
+                {
+                    "accountID": 17,
+                    "title": "Inventory",
+                    "titleArb": "البضائع",
+                    "titlePer": "موجودى كالا",
+                    "parentAccountId": 9,
+                    "debit": null,
+                    "credit": null,
+                    "debit_remain": null,
+                    "credit_remain": null,
+                    "children": []
+                },
+                {
+                    "accountID": 18,
+                    "title": "Cash Draw",
+                    "titleArb": "صندوق",
+                    "titlePer": "صندوق",
+                    "parentAccountId": 9,
+                    "debit": 240,
+                    "credit": 120,
+                    "debit_remain": 120,
+                    "credit_remain": 0,
+                    "children": []
+                },
+                {
+                    "accountID": 19,
+                    "title": "Debtors",
+                    "titleArb": "المدینین",
+                    "titlePer": "بدهکاران",
+                    "parentAccountId": 9,
+                    "debit": null,
+                    "credit": null,
+                    "debit_remain": null,
+                    "credit_remain": null,
+                    "children": []
+                }
+            ]
+        },
+        {
+            "accountID": 13,
+            "title": "Liabilities",
+            "titleArb": "الدین الحالی",
+            "parentAccountId": null,
+            "debit": 0,
+            "credit": 300,
+            "debit_remain": 0,
+            "credit_remain": 300,
+            "children": [
+                {
+                    "accountID": 14,
+                    "title": "Creditors",
+                    "titleArb": "الداینین",
+                    "titlePer": "بستانکاران",
+                    "parentAccountId": 13,
+                    "debit": 0,
+                    "credit": 300,
+                    "debit_remain": 0,
+                    "credit_remain": 300,
+                    "children": [
+                        {
+                            "accountID": 15,
+                            "title": "Salas",
+                            "titleArb": "سالاس",
+                            "titlePer": "سالاس",
+                            "parentAccountId": 14,
+                            "debit": 0,
+                            "credit": 300,
+                            "debit_remain": 0,
+                            "credit_remain": 300,
+                            "children": []
+                        }
+                    ]
+                },
+                {
+                    "accountID": 16,
+                    "title": "Loans Recievable",
+                    "titleArb": "قروض مستحقه القبض",
+                    "titlePer": "وام های دریافتی",
+                    "parentAccountId": 13,
+                    "debit": null,
+                    "credit": null,
+                    "debit_remain": null,
+                    "credit_remain": null,
+                    "children": []
+                }
+            ]
+        }
+    ]
+}
+
+
+[{"itemId":7,"transactionItemId":3,"date":"2020-04-30T03:04:37.42","tranCode":"RET","price":120,"quantity":1}]

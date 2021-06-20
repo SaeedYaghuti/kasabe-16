@@ -1,0 +1,692 @@
+import { EntityNotFoundError } from "typeorm/error/EntityNotFoundError";
+
+import { Test } from "@nestjs/testing";
+import { DatabaseService } from '../../../database/database.service';
+import { DatabaseModule } from '../../../database/database.module';
+import { TestUtils } from '../../../test/test.utils';
+import { EntitiesSeed } from '../../../test/fixtures/_entities';
+import { BadRequestException } from "@nestjs/common";
+import { AuthModule } from '../../../auth/auth.module';
+import { AuthService } from '../../../auth/auth.service';
+import { AuthRepository } from "../../../auth/auth/auth.repository";
+import { AccessControlModule } from 'nest-access-control';
+import { roles } from '../../../auth/auth.roles';
+import { MerchantCategoryRepository } from '../merchant_category/merchant_category.repository';
+import { BuildMerchantInputs } from '../../../test/fixtures/kasabe/merchant/build.merchant.inputs';
+import { CreateAuthInputs } from '../../../test/fixtures/auth/auth/build.auth.inputs';
+import { Auth } from '../../../auth/auth/auth.entity';
+import { Tag } from "../tag/tag.entity";
+import { TagRepository } from '../tag/tag.repository';
+import { BuildTagInputs } from '../../../test/fixtures/kasabe/tag/build.tag.inputs';
+import { MerchantCategory } from '../merchant_category/merchant_category.entity';
+import { BuildMerchantCategoryInputs } from '../../../test/fixtures/kasabe/merchant_category/build.merchant_category.inputs';
+import { PersonRepository } from "../person/person.repository";
+import { RateRepository } from './rate.repository';
+import { MerchantRepository } from '../merchant/merchant.repository';
+import { Merchant } from '../merchant/merchant.entity';
+import { Rate } from './rate.entity';
+import { BuildHeartInputs } from '../../../test/fixtures/kasabe/heart/build.heart.inputs';
+import { HeartRepository } from '../heart/heart.repository';
+import { Heart } from '../heart/heart.entity';
+import { BuildRateInputs } from '../../../test/fixtures/kasabe/rate/build.rate.inputs';
+import { Article } from '../article/article.entity';
+import { BuildArticleInputs } from '../../../test/fixtures/kasabe/article/build.article.inputs';
+
+jest.setTimeout(90000);
+
+describe("rate.repository.spec.ts", () => {
+  let testUtils: TestUtils;
+  let authService: AuthService;
+
+  let merchantRepository: MerchantRepository;
+  let merchantCategoryRepository: MerchantCategoryRepository;
+  let tagRepository: TagRepository;
+  let rateRepository: RateRepository;
+  let heartRepository: HeartRepository;
+
+  beforeEach(async done => {
+    const module = await Test.createTestingModule({
+      imports: [
+        AccessControlModule.forRoles(roles),
+        DatabaseModule,
+        AuthModule,
+      ],
+      providers: [
+        DatabaseService, 
+        TestUtils, 
+
+        AuthRepository,
+        TagRepository,
+        MerchantRepository,
+        RateRepository,
+        HeartRepository,
+        
+        AuthService,
+      ]
+    }).compile()
+
+    testUtils = module.get<TestUtils>(TestUtils);
+    authService = module.get<AuthService>(AuthService);
+
+    try {
+      merchantRepository = testUtils.databaseService.connection.getCustomRepository(MerchantRepository);
+      merchantCategoryRepository = testUtils.databaseService.connection.getCustomRepository(MerchantCategoryRepository);
+      tagRepository = testUtils.databaseService.connection.getCustomRepository(TagRepository);
+      rateRepository = module.get<RateRepository>(RateRepository);
+      heartRepository = module.get<HeartRepository>(HeartRepository);
+    } catch (error) {
+      console.error('merchantRepository| error>', error);
+    }
+    
+    // merchantRepository = testUtils.databaseService.connection.getCustomRepository(MerchantRepository);
+
+    done();
+  });
+
+  beforeEach(async done => {
+    try {
+      //// await testUtils.cleanAllSamples();
+      await testUtils.cleanEntities();
+    } catch (error) {
+      console.log('<<rate.repository.ts>> cleanEntities error: ', error);
+    }
+    done();
+  });
+ 
+  afterEach(async done => {
+    await testUtils.closeDbConnection();
+    done();
+  });
+
+  describe("[a] Variables()", () => {
+    
+    it("[1] testUtils", async done => {
+      expect(testUtils).toBeDefined();
+      done();
+    }, 20000);
+
+    // it("[2] authService", async done => {
+    //   expect(authService).toBeDefined();
+    //   expect(authService).toBeInstanceOf(AuthService);
+    //   done();
+    // }, 20000);
+    
+    // it("[3] merchantRepository", async done => {
+    //   expect(merchantRepository).toBeDefined();
+    //   expect(merchantRepository).toBeInstanceOf(MerchantRepository);
+    //   done();
+    // }, 20000);
+ 
+    // it("[4] merchantCategoryRepository", async done => {
+    //   expect(merchantCategoryRepository).toBeDefined();
+    //   expect(merchantCategoryRepository).toBeInstanceOf(MerchantCategoryRepository);
+    //   done();
+    // }, 20000);
+
+    // it("[5] tagRepository", async done => {
+    //   expect(tagRepository).toBeDefined();
+    //   expect(tagRepository).toBeInstanceOf(TagRepository);
+    //   done();
+    // }, 20000);
+    
+    // it("[6] rateRepository", async done => {
+    //   expect(rateRepository).toBeDefined();
+    //   expect(rateRepository).toBeInstanceOf(RateRepository);
+    //   done();
+    // }, 20000);
+    
+    
+
+  });
+
+  describe("[b] build()", () => {
+
+    it("[1] should create new Rate", async done => {
+
+      //* samples
+      // try {
+      //   await testUtils.loadAllSamples();
+      // } catch (error) {
+      //   console.log('<rate.repository.spec| loadAllSamples error>', error);
+      // }
+
+      //* auth
+      const authCount = 2;
+      const gAuths: Auth[] = [];
+      
+      for( const authInput of CreateAuthInputs.slice(0, authCount) ) {
+        const gAuth = await authService.build(authInput);
+        gAuths.push(gAuth);
+      }
+      // console.log("<b1| gAuths>", gAuths);
+      expect(gAuths.length).toBe(2);
+      
+      //* article
+      const articleCount = 6;
+      const gArticles: Article[] = [];
+      
+      for( const articleInput of BuildArticleInputs.slice(0, articleCount) ) {
+        const nArticle = await Article.of(articleInput);
+        const gArticle = await Article.save(nArticle);
+        gArticles.push(gArticle);
+      }
+      // console.log("<b1| gArticles>", gArticles);
+      expect(gArticles.length).toBe(articleCount);
+
+      //* tag
+      const tagCount = 3;
+      const gTags: Tag[] = [];
+      
+      for( const tagInput of BuildTagInputs.slice(0, tagCount) ) {
+        const nTag = Tag.of(tagInput);
+        const gTag = await Tag.save(nTag);
+        gTags.push(gTag);
+      }
+      // console.log("<b1| gTags>", gTags);
+      expect(gTags.length).toBe(3);
+      
+      //* merchantCategory
+      const merchantCategoryCount = 2;
+      const gMerchantCategorys: MerchantCategory[] = [];
+      
+      for( const merchantCategoryInput of BuildMerchantCategoryInputs.slice(0, merchantCategoryCount) ) {
+        const nMerchantCategory = MerchantCategory.of(merchantCategoryInput);
+        const gMerchantCategory = await MerchantCategory.save(nMerchantCategory);
+        gMerchantCategorys.push(gMerchantCategory);
+      }
+      // console.log("<b1| gMerchantCategorys>", gMerchantCategorys);
+      expect(gMerchantCategorys.length).toBe(merchantCategoryCount);
+      
+      //* merchant
+      const merchantCount = 1;
+      const gMerchants: Merchant[] = [];
+      
+      for( const merchantInput of BuildMerchantInputs.slice(0, merchantCount) ) {
+        const gMerchant = await merchantRepository.build(merchantInput);
+        gMerchants.push(gMerchant);
+      }
+      // console.log("<b1| build| gMerchants>", gMerchants);
+      expect(gMerchants.length).toBe(merchantCount);
+      expect(gMerchants[0]).toBeDefined();
+      expect(gMerchants[0].merchant_id).toEqual(1);
+      expect(gMerchants[0].merchant_title).toEqual(BuildMerchantInputs[0].merchant_title);
+      
+
+      //* rate
+      const rateCount = 1;
+      const gRates: Rate[] = [];
+      
+      for( const rateInput of BuildRateInputs.slice(0, rateCount) ) {
+        const gRate = await rateRepository.build(rateInput);
+        gRates.push(gRate);
+      }
+      console.log("<b1| build| gRates>", gRates);
+      expect(gRates.length).toBe(rateCount);
+      expect(gRates[0]).toBeDefined();
+      expect(gRates[0].rate_id).toEqual(1);
+      expect(gRates[0].rate_text).toEqual(BuildRateInputs[0].rate_text);
+      // expect(gRates[0].article).toBeDefined();
+      // expect(gRates[0].article_id).toEqual(1);
+
+      done();
+    }, 900000);
+    
+  });
+  
+  describe("[b] merchantCreate()", () => {
+
+    // it("[1] should create new Rate", async done => {
+
+    //   //* auth
+    //   const authCount = 2;
+    //   const gAuths: Auth[] = [];
+      
+    //   for( const authInput of CreateAuthInputs.slice(0, authCount) ) {
+    //     const gAuth = await authService.build(authInput);
+    //     gAuths.push(gAuth);
+    //   }
+    //   // console.log("<b1| gAuths>", gAuths);
+    //   expect(gAuths.length).toBe(2);
+
+    //   //* tag
+    //   const tagCount = 3;
+    //   const gTags: Tag[] = [];
+      
+    //   for( const tagInput of BuildTagInputs.slice(0, tagCount) ) {
+    //     const nTag = Tag.of(tagInput);
+    //     const gTag = await Tag.save(nTag);
+    //     gTags.push(gTag);
+    //   }
+    //   // console.log("<b1| gTags>", gTags);
+    //   expect(gTags.length).toBe(3);
+      
+    //   //* merchantCategory
+    //   const merchantCategoryCount = 2;
+    //   const gMerchantCategorys: MerchantCategory[] = [];
+      
+    //   for( const merchantCategoryInput of BuildMerchantCategoryInputs.slice(0, merchantCategoryCount) ) {
+    //     const nMerchantCategory = MerchantCategory.of(merchantCategoryInput);
+    //     const gMerchantCategory = await MerchantCategory.save(nMerchantCategory);
+    //     gMerchantCategorys.push(gMerchantCategory);
+    //   }
+    //   // console.log("<b1| gMerchantCategorys>", gMerchantCategorys);
+    //   expect(gMerchantCategorys.length).toBe(merchantCategoryCount);
+      
+    //   //* merchant
+    //   const merchantCount = 1;
+    //   const gMerchants: Merchant[] = [];
+      
+    //   for( const merchantInput of BuildMerchantInputs.slice(0, merchantCount) ) {
+    //     const gMerchant = await merchantRepository.build(merchantInput);
+    //     gMerchants.push(gMerchant);
+    //   }
+    //   // console.log("<b1| build| gMerchants>", gMerchants);
+    //   expect(gMerchants.length).toBe(merchantCount);
+    //   expect(gMerchants[0]).toBeDefined();
+    //   expect(gMerchants[0].merchant_id).toEqual(1);
+    //   expect(gMerchants[0].merchant_title).toEqual(BuildMerchantInputs[0].merchant_title);
+      
+    //   //* rate
+    //   const rateCount = 1;
+    //   const gRates: Rate[] = [];
+      
+    //   for( const rateInput of BuildRateInputs.slice(0, rateCount) ) {
+    //     const gRate = await rateRepository.build(rateInput);
+    //     gRates.push(gRate);
+    //   }
+    //   // console.log("<b1| build| gRates>", gRates);
+    //   expect(gRates.length).toBe(rateCount);
+    //   expect(gRates[0]).toBeDefined();
+    //   expect(gRates[0].rate_id).toEqual(1);
+    //   expect(gRates[0].rate_text).toEqual(BuildRateInputs[0].rate_text);
+
+    //   //* merchant
+    //   const fMerchant = await merchantRepository.fetchById(gMerchants[0].merchant_id);
+    //   // console.log("<rate.repository| b1 |fMerchant>", fMerchant);
+    //   expect(fMerchant.rates).toBeInstanceOf(Array);
+    //   expect(fMerchant.rates.length).toBe(1);
+    //   expect(fMerchant.rates[0].rate_id).toBe(1);
+    //   expect(fMerchant.rates[0].rate_text).toBe(BuildRateInputs[0].rate_text);
+
+    //   done();
+    // }, 20000);
+    
+  });
+  
+  describe("[c] getMerchantRatesForAuth01()", () => {
+
+    // it("[1] rate_data: ✅, merchant_data: ✅, heart_data: ❌, heart_counts: ❌, liked: ❌", async done => {
+
+    //   try {
+    //     await testUtils.loadAllSamples();
+    //   } catch (error) {
+    //     console.log('<rate.repository.spec| loadAllSamples error>', error);
+    //   }
+      
+    //   const fRate = await rateRepository.getMerchantRatesForAuth01(1,1);
+    //   console.log('<getMerchantRatesForAuth01| fRate>', fRate);
+    //   expect(fRate).toBeDefined();
+    //   // expect(fRate).toBeInstanceOf(Array);
+
+    //   done();
+    // }, 20000);
+
+  });
+  
+  describe("[d] getMerchantRatesForAuth02()", () => {
+
+    // it("[1] rate_data: ✅, heart_data: ❌, heart_counts: ❌, liked: ❌", async done => {
+
+    //   try {
+    //     await testUtils.loadAllSamples();
+    //   } catch (error) {
+    //     console.log('<rate.repository.spec| loadAllSamples error>', error);
+    //   }
+
+    //   const fRate = await rateRepository.getMerchantRatesForAuth02(1,1);
+    //   console.log('<getMerchantRatesForAuth02| fRate>', fRate);
+    //   expect(fRate).toBeDefined();
+    //   expect(fRate).toBeInstanceOf(Array);
+    //   expect(fRate[0].merchant).toBeUndefined();
+
+    //   done();
+    // }, 20000);
+
+  });
+  
+  describe("[e] getMerchantRatesForAuth03()", () => {
+
+    // it("[1] rate_data: ✅, heart_data: ✅, heart_counts: ❌, liked: ❌", async done => {
+
+    //   try {
+    //     await testUtils.loadAllSamples();
+    //   } catch (error) {
+    //     console.log('<rate.repository.spec| loadAllSamples error>', error);
+    //   }
+
+    //   const fResult03 = await rateRepository.getMerchantRatesForAuth03(1,1);
+    //   console.log('<getMerchantRatesForAuth03| fResult03>', fResult03);
+    //   expect(fResult03).toBeDefined();
+    //   expect(fResult03).toBeInstanceOf(Array);
+    //   expect(fResult03[0].heart_heart_id).toBe(1);
+
+    //   done();
+
+    // });
+    
+  });
+  
+  describe("[f] getMerchantRatesForAuth04()", () => {
+
+    // it("[1] rate_data: ✅, heart_data: ❌, heart_counts: ✅, liked: ❌", async done => {
+
+    //   try {
+    //     await testUtils.loadAllSamples();
+    //   } catch (error) {
+    //     console.log('<rate.repository.spec| loadAllSamples error>', error);
+    //   }
+      
+    //   const fResult04 = await rateRepository.getMerchantRatesForAuth04(1,1);
+    //   console.log('<getMerchantRatesForAuth04| fResult04>', fResult04);
+    //   expect(fResult04).toBeDefined();
+    //   expect(fResult04).toBeInstanceOf(Array);
+    //   expect(fResult04[0].heart_counts).toBe("0");
+      
+    //   done();
+    // }, 20000);
+
+  });
+ 
+  describe("[g] getMerchantRatesForAuth05()", () => {
+    //! not-working
+    // it("[1] should only return rate released by merchant-id 1", async done => {
+
+    //   try {
+    //     await testUtils.loadAllSamples();
+    //   } catch (error) {
+    //     console.log('<rate.repository.spec| loadAllSamples error>', error);
+    //   }
+      
+    //   //// not working
+    //   //// const fResult05 = await rateRepository.getMerchantRatesForAuth05(1,1);
+    //   //// console.log('<getMerchantRatesForAuth05| fResult05>', fResult05);
+    //   //// expect(fResult05).toBeDefined();
+    //   //// expect(fResult05).toBeInstanceOf(Array);
+    //   ////expect(fResult05[0].merchant).toBeUndefined();
+      
+
+    //   done();
+    // }, 20000);
+
+  });
+  
+  describe("[h] getMerchantRatesForAuth06()", () => {
+
+    // it("[1] rate_data: ✅, heart_counts: ✅, liked: ✅,", async done => {
+
+    //   try {
+    //     await testUtils.loadAllSamples();
+    //   } catch (error) {
+    //     console.log('<rate.repository.spec| loadAllSamples error>', error);
+    //   }
+      
+    //   const fResult06: Rate[] = await rateRepository.getMerchantRatesForAuth06(1,1);
+    //   console.log('<getMerchantRatesForAuth06| fResult06>', fResult06);
+    //   expect(fResult06).toBeDefined();
+    //   expect(fResult06).toBeInstanceOf(Array);
+    //   expect(fResult06[0].heart_count).toBe('2');
+    //   expect(fResult06[0].liked).toBe(true);
+
+    //   done();
+    // }, 20000);
+
+  });
+
+  //! not-check below here
+  describe("[c] merchantGetById()", () => {
+
+    // it("[1] CR.merchantGetById(1) should return data", async done => {
+
+    //   try {
+    //     // await testUtils.reloadAllSamples();
+    //     await testUtils.loadAllSamples();
+    //   } catch (error) {
+    //     console.log('2|cgbi error: ', error);
+    //     expect(error).toBeUndefined();
+    //   }
+      
+
+    //   const fMerchant = await merchantRepository.merchantGetById(1);
+    //   expect(fMerchant).toBeDefined();
+    //   expect(fMerchant.merchant_fname).toEqual('saeid');
+    //   done();
+    // }, 20000);
+
+    // it("[2] CR.merchantGetById(10) should return undefined", async done => {
+
+    //   try {
+    //     // await testUtils.reloadAllSamples();
+    //     await testUtils.loadAllSamples();
+    //   } catch (error) {
+    //     console.log('3|cgbi error: ', error);
+    //     expect(error).toBeUndefined();
+    //   }
+
+    //   const fMerchant = await merchantRepository.merchantGetById(10);
+    //   expect(fMerchant).toBeUndefined();
+
+    //   done();
+    // }, 20000);
+    
+  });
+  
+  describe("[d] merchantUpdate()", () => {
+
+    // it("[1] should update", async done => {
+
+    //   try {
+    //     // await testUtils.reloadAllSamples();
+    //     await testUtils.loadAllSamples();
+    //   } catch (error) {
+    //     console.log('1|cu error: ', error);
+    //     expect(error).toBeUndefined();
+    //   }
+
+    //   const toUpdateMerchant: MerchantUpdateDto = {
+    //     merchant_id: 1,
+    //     merchant_fname: "updated saeid",
+    //   };
+      
+    //   let uMerchant;
+    //   try {
+    //     uMerchant = await merchantRepository.merchantUpdate(toUpdateMerchant);
+    //   } catch (error) {
+    //     console.log('1|su Error: ', error);
+    //     expect(error).toBeUndefined();
+    //   }
+      
+    //   expect(uMerchant).toBeDefined();
+    //   expect(uMerchant.merchant_fname).toEqual('updated saeid');
+    //   done();
+    // }, 20000);
+    
+    // it("[2] merchant_id is invalid hence should throw error", async done => {
+
+    //   try {
+    //     // await testUtils.reloadAllSamples();
+    //     await testUtils.loadAllSamples();
+    //   } catch (error) {
+    //     console.log('2|cu error: ', error);
+    //     expect(error).toBeUndefined();
+    //   }
+
+    //   const toUpdateMerchant: MerchantUpdateDto = {
+    //     merchant_id: 10,
+    //     merchant_fname: "update saeid",
+    //   };
+      
+    //   let uMerchant;
+    //   try {
+    //     uMerchant = await merchantRepository.merchantUpdate(toUpdateMerchant);
+    //   } catch (error) {
+    //     expect(error).toBeDefined();
+    //     // 🎯  TODO: import EntityNotFoundError
+    //     expect(error).toBeInstanceOf(EntityNotFoundError);
+    //     expect(error.message).toEqual(`Could not find any entity of type "Merchant" matching: ${toUpdateMerchant.merchant_id}`);
+    //   }
+      
+    //   expect(uMerchant).toBeUndefined();
+
+    //   done();
+    // }, 20000);
+    
+    // it("[3] merchant_fname is invalid hence should throw error", async done => {
+
+    //   try {
+    //     // await testUtils.reloadAllSamples();
+    //     await testUtils.loadAllSamples();
+    //   } catch (error) {
+    //     console.log('3|cu error: ', error);
+    //     expect(error).toBeUndefined();
+    //   }
+
+    //   const toUpdateMerchant: MerchantUpdateDto = {
+    //     merchant_id: 1,
+    //     merchant_fname: "",
+    //   };
+      
+    //   let uMerchant;
+    //   try {
+    //     uMerchant = await merchantRepository.merchantUpdate(toUpdateMerchant);
+    //   } catch (error) {
+    //     expect(error).toBeDefined();
+    //     expect(error).toBeInstanceOf(BadRequestException);
+    //     expect(error.message).toEqual(`Validation failed!`);
+    //   }
+      
+    //   expect(uMerchant).toBeUndefined();
+    //   done();
+    // }, 20000);
+    
+    // it("[4] merchant_mname is invalid hence should throw error", async done => {
+
+    //   try {
+    //     // await testUtils.reloadAllSamples();
+    //     await testUtils.loadAllSamples();
+    //   } catch (error) {
+    //     console.log('3|cu error: ', error);
+    //     expect(error).toBeUndefined();
+    //   }
+
+    //   const toUpdateMerchant: MerchantUpdateDto = {
+    //     merchant_id: 1,
+    //     merchant_mname: "",
+    //   };
+      
+    //   let uMerchant;
+    //   try {
+    //     uMerchant = await merchantRepository.merchantUpdate(toUpdateMerchant);
+    //   } catch (error) {
+    //     expect(error).toBeDefined();
+    //     expect(error).toBeInstanceOf(BadRequestException);
+    //     expect(error.message).toEqual(`Validation failed!`);
+    //   }
+      
+    //   expect(uMerchant).toBeUndefined();
+    //   done();
+    // }, 20000);
+    
+    // it("[5] 🎯 phone is invalid hence should throw error", async done => {
+
+    //   try {
+    //     // await testUtils.reloadAllSamples();
+    //     await testUtils.loadAllSamples();
+    //   } catch (error) {
+    //     console.log('3|cu error: ', error);
+    //     expect(error).toBeUndefined();
+    //   }
+
+    //   // const toUpdateMerchant: MerchantUpdateDto = {
+    //   //   merchant_id: 1,
+    //   //   merchant_mname: "",
+    //   // };
+      
+    //   // let uMerchant;
+    //   // try {
+    //   //   uMerchant = await merchantRepository.merchantUpdate(toUpdateMerchant);
+    //   // } catch (error) {
+    //   //   expect(error).toBeDefined();
+    //   //   expect(error).toBeInstanceOf(BadRequestException);
+    //   //   expect(error.message).toEqual(`Validation failed!`);
+    //   // }
+      
+    //   // expect(uMerchant).toBeUndefined();
+    //   done();
+    // }, 20000);
+
+    // it("[6] email is invalid hence should throw error", async done => {
+
+    //   try {
+    //     // await testUtils.reloadAllSamples();
+    //     await testUtils.loadAllSamples();
+    //   } catch (error) {
+    //     console.log('3|cu error: ', error);
+    //     expect(error).toBeUndefined();
+    //   }
+
+    //   const toUpdateMerchant: MerchantUpdateDto = {
+    //     merchant_id: 1,
+    //     email: "saeid@gmailcom",
+    //   };
+      
+    //   let uMerchant;
+    //   try {
+    //     uMerchant = await merchantRepository.merchantUpdate(toUpdateMerchant);
+    //   } catch (error) {
+    //     expect(error).toBeDefined();
+    //     expect(error).toBeInstanceOf(BadRequestException);
+    //     expect(error.message).toEqual(`Validation failed!`);
+    //   }
+      
+    //   expect(uMerchant).toBeUndefined();
+    //   done();
+    // }, 20000);
+    
+  });
+
+  describe("[e] merchantGetByRoomId()", () => {
+
+    // it("[1] CR.merchantsGetByRoomId(1) should return []", async done => {
+
+    //   try {
+    //     // await testUtils.reloadAllSamples();
+    //     await testUtils.loadAllSamples();
+    //   } catch (error) {
+    //     console.log('2|cgbi error: ', error.message);
+    //     expect(error).toBeUndefined();
+    //   }
+      
+    //   const fMerchants = await merchantRepository.merchantsGetByRoomId(1);
+    //   expect(fMerchants).toBeDefined();
+    //   expect(fMerchants.length).toEqual(3);
+    //   expect(fMerchants[0].merchant_fname).toEqual("saeid");
+    //   expect(fMerchants[1].merchant_fname).toEqual("hamid");
+    //   expect(fMerchants[2].merchant_fname).toEqual("asity");
+
+      
+    //   done();
+    // }, 20000);
+    
+    // it("[2] CR.merchantsGetByRoomId(1) should return []", async done => {
+      
+    //   const fMerchants = await merchantRepository.merchantsGetByRoomId(1);
+    //   expect(fMerchants).toEqual([]);
+      
+    //   done();
+    // }, 20000);
+    
+  });
+
+
+
+})

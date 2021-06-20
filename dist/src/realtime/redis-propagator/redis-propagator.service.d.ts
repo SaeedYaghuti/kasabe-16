@@ -1,0 +1,31 @@
+import { Server } from 'socket.io';
+import { RedisService } from '../redis/redis.service';
+import { SocketStateService } from '../socket-state/socket-state.service';
+import { RedisSocketEventEmitDTO } from './dto/socket-event-emit.dto';
+import { RedisSocketEventSendDTO } from './dto/socket-event-send.dto';
+import { EmittoGroupDto } from './dto/emit-to-group.dto';
+import { EmitClientStatusEvent } from './dto/emit-client-staus-event.dto';
+import { WatchClientStatusDto } from './dto/request-client-status.dto';
+import { EmittoAuthDto } from './dto/emit-to-user.dto';
+export declare class RedisPropagatorService {
+    private readonly socketStateService;
+    private readonly redisService;
+    private socketServer;
+    private logger;
+    constructor(socketStateService: SocketStateService, redisService: RedisService);
+    injectSocketServer(server: Server): RedisPropagatorService;
+    publishEmittoAuth(eventInfo: EmittoAuthDto): boolean;
+    private consumeSendEventtoAuth;
+    publishEmittoGroup(eventInfo: EmittoGroupDto): boolean;
+    private consumeSendEventtoGroup;
+    publishEmitClientStatus(eventInfo: EmitClientStatusEvent): boolean;
+    private consumeEmitClientStatus;
+    publishWatchClientStatus(eventInfo: WatchClientStatusDto): boolean;
+    private consumeWatchClientStatus;
+    private consumeEmitToAllEvent;
+    private consumeEmitToAuthenticatedEvent;
+    propagateEvent(eventInfo: RedisSocketEventSendDTO): boolean;
+    private consumeSendEvent;
+    emitToAuthenticated(eventInfo: RedisSocketEventEmitDTO): boolean;
+    emitToAll(eventInfo: RedisSocketEventEmitDTO): boolean;
+}

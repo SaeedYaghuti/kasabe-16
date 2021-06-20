@@ -1,0 +1,1234 @@
+import { Test, TestingModule } from '@nestjs/testing';
+import { INestApplication } from '@nestjs/common';
+import { TestUtils } from '../../../test/test.utils';
+import { DatabaseService } from '../../../database/database.service';
+import { KasabeTestModule } from '../../kasabe_test.module';
+import request from 'supertest';
+
+
+import { PersonRepository } from '../person/person.repository';
+import { PersonService } from '../person/person.service';
+import { of } from 'rxjs';
+import { CreatePersonInputs } from '../../../test/fixtures/kasabe/person/create.person.inputs';
+import { Person } from '../person/person.entity';
+import { OrderRepository } from '../order/order.repository';
+import { OrderService } from '../order/order.service';
+import { PersonRole } from '../person/person_role.enum';
+import { MerchantCategoryService } from './merchant_category.service';
+import { MerchantCategoryRepository } from './merchant_category.repository';
+import { MerchantRepository } from '../merchant/merchant.repository';
+import { MerchantService } from '../merchant/merchant.service';
+import { BuildMerchantCategoryInputs } from '../../../test/fixtures/kasabe/merchant_category/build.merchant_category.inputs';
+import { BuildMerchantCategoryInput } from './dto/create_merchant_category.input';
+import { MerchantCategory } from './merchant_category.entity';
+import { UpdateMerchantCategoryInput } from './dto/update_merchant_category.input';
+import { UpdateMerchantCategoryInputs } from '../../../test/fixtures/kasabe/merchant_category/rebuild.merchant_category.input';
+
+jest.setTimeout(90000);
+
+//#region  Fake Class
+
+class MerchantCategoryServiceFake {
+  public async testQuery(): Promise<void> {}
+  public async build(): Promise<void> {}
+  public async rebuild(): Promise<void> {}
+  public async fetchById(): Promise<void> {}
+}
+
+//#endregion
+
+//#region  modifing third item
+const fixInput = input => JSON.stringify(input).replace(
+  /\"([^(\")"]+)\":/g,
+  '$1:',
+);
+//#endregion
+
+describe('merchantCategory.e2e.spec.ts', () => {
+
+  let app: INestApplication;
+  let testUtils: TestUtils;
+
+  let merchantCategoryService: MerchantCategoryService;
+  let merchantRepository: MerchantRepository;
+  let merchantCategoryRepository: MerchantCategoryRepository;
+
+  let personRepository: PersonRepository;
+  
+  let orderRepository: OrderRepository;
+  
+
+  beforeAll(async () => {
+
+    const module: TestingModule = await Test.createTestingModule({
+      imports: [ 
+        KasabeTestModule
+      ],
+      providers: [
+        DatabaseService,
+        TestUtils,
+
+        MerchantRepository, 
+        MerchantService,
+        
+        MerchantCategoryRepository, 
+        MerchantCategoryService,
+        
+        OrderRepository, 
+        OrderService,
+        
+        PersonRepository, 
+        PersonService,
+      ]
+
+    })
+    .compile();
+
+    app = module.createNestApplication();
+
+    await app.init();
+
+    await app.listen(3000);
+
+    testUtils = module.get<TestUtils>(TestUtils);
+    merchantCategoryService = app.get<MerchantCategoryService>(MerchantCategoryService);
+    // merchantCategoryRepository = testUtils.databaseService.connection.getRepository(MerchantCategory); // return Repository
+    merchantCategoryRepository = testUtils.databaseService.connection.getCustomRepository(MerchantCategoryRepository);
+    merchantRepository = testUtils.databaseService.connection.getCustomRepository(MerchantRepository);
+    personRepository = testUtils.databaseService.connection.getCustomRepository(PersonRepository);
+    orderRepository = testUtils.databaseService.connection.getCustomRepository(OrderRepository);
+    
+  });
+
+  afterAll(async done => {
+    app?.close();
+    done();
+  })
+
+  beforeEach(async done => {
+    try {
+      // await testUtils.reloadAllSamples();
+      await testUtils.cleanAllSamples();
+      // await testUtils.reloadAllSamples();
+    } catch (error) {
+      console.log('<m.r.s> cleanAllSamples error: ', error);
+    }
+    done();
+  });
+ 
+  afterAll(async done => {
+    await testUtils.closeDbConnection();
+    done();
+  });
+
+  
+
+  //#region a
+
+  describe('[a] variables', () => {
+
+    // it('[1] testUtils should be defined', async (done) => {
+      
+    //     expect(testUtils).toBeDefined();
+  
+    //     done();
+  
+    // }, 20000);
+     
+    // it('[2] merchantRepository should be defined', async (done) => {
+      
+    //   expect(merchantRepository).toBeDefined();
+    //   expect(merchantRepository).toBeInstanceOf(MerchantRepository);
+
+    //   done();
+
+    // }, 20000);
+
+    // it('[3] merchantCategoryService should be defined', async (done) => {
+      
+    //   expect(merchantCategoryService).toBeDefined();
+    //   expect(merchantCategoryService).toBeInstanceOf(MerchantCategoryService);
+
+    //   done();
+
+    // }, 20000);
+     
+    // it('[4] merchantCategoryRepository should be defined', async (done) => {
+      
+    //   expect(merchantCategoryRepository).toBeDefined();
+    //   expect(merchantCategoryRepository).toBeInstanceOf(MerchantCategoryRepository);
+
+    //   done();
+
+    // }, 20000);
+    
+    // it('[5] orderRepository should be defined', async (done) => {
+      
+    //   expect(orderRepository).toBeDefined();
+    //   expect(orderRepository).toBeInstanceOf(OrderRepository);
+
+    //   done();
+
+    // }, 20000);
+
+  });
+  
+  //#endregion
+ 
+  //#region b
+
+  describe('[b] test queries', () => {
+
+    
+    // it('[1] merchantCategoryTestQuery()', async (done) => {  
+
+    //     const query = 
+    //     `
+    //     query {
+    //         merchantCategoryTestQuery(message: "Salam"){
+    //             message
+    //         }
+    //     }
+    //     `;
+    
+    //     request(app.getHttpServer())
+    //     .post('/graphql')
+    //     .send({
+    //         operationName: null,
+    //         query: query
+    //     })
+    //     .set('Accept', 'application/json')
+    //     .expect(200)
+    //     .end((err, res) => {
+    
+    //         // console.log('<e111> err:', err);
+    
+    //         if(err) return done(err);
+    
+    //         // console.log('<e12> res.body:', res.body);
+        
+    //         expect(res.body).toBeInstanceOf(Object);
+    
+    //         const merchantCategory = res.body?.data?.merchantCategoryTestQuery;
+            
+    //         expect(merchantCategory.message).toBe("Salam");
+    //         done();
+    
+    //     });
+    
+    // }, 20000);  
+    
+    
+    // it('[2] merchantCategoryTestMutation()', async (done) => {  
+
+    //     const query = 
+    //     `
+    //     mutation {
+    //         merchantCategoryTestMutation(message: "Salam"){
+    //             message
+    //         }
+    //     }
+    //     `;
+    
+    //     request(app.getHttpServer())
+    //     .post('/graphql')
+    //     .send({
+    //         operationName: null,
+    //         query: query
+    //     })
+    //     .set('Accept', 'application/json')
+    //     .expect(200)
+    //     .end((err, res) => {
+    
+    //         // console.log('<e111> err:', err);
+    //         // console.log('<e12> res.body:', res.body);
+    
+    //         if(err) return done(err);
+        
+    //         expect(res.body).toBeInstanceOf(Object);
+    
+    //         const merchantCategory = res.body?.data?.merchantCategoryTestMutation;
+            
+    //         expect(merchantCategory.message).toBe("Salam");
+    //         done();
+    
+    //     });
+    
+    //     }, 20000);  
+    
+    
+  });
+  
+  //#endregion
+  
+  //#region c
+
+  describe('[c] build', () => {
+
+    //#region  [1] ✅
+
+    // it('[1] build()', async (done) => {  
+
+    //     // 🚧 create person
+    //     // const pInput = CreatePersonInputs[0];
+    //     // const gPerson = personRepository.build(pInput);
+
+    //     // 🚧 create order 
+    //     // 🎯 ToDo
+
+    //     const qInput: BuildMerchantCategoryInput = BuildMerchantCategoryInputs[0];
+
+    //     const query = 
+    //     `
+    //     mutation {
+    //         build(merchantCategory: ${fixInput(qInput)}){
+    //             id
+    //             category_name
+    //             category_description
+    //             children {
+    //                 id
+    //                 category_name
+    //                 category_description
+    //             }
+    //             parent {
+    //                 id
+    //                 category_name
+    //                 category_description
+    //             }
+    //             parentId
+    //             flag_merchant_id
+    //             flag_merchant {
+    //                 merchant_id
+    //                 sku
+    //                 supplier_sku
+    //                 #category
+    //                 #merchant_category_id
+    //                 merchant_name
+    //                 msrp
+    //                 price
+    //                 price_currency
+    //                 currency_symbole
+    //                 unit_title
+    //                 unit_weight
+    //                 unit_weight_title
+    //                 is_discount
+    //                 discount
+    //                 ranking
+    //                 reorder_level
+    //                 is_active
+    //                 #tags {
+    //                 #}
+    //                 #order_details {
+    //                 #}
+    //             }
+    //             picture_url
+    //             isActive
+    //             merchants {
+    //                 merchant_id
+    //                 sku
+    //                 supplier_sku
+    //                 #category
+    //                 #merchant_category_id
+    //                 merchant_name
+    //                 msrp
+    //                 price
+    //                 price_currency
+    //                 currency_symbole
+    //                 unit_title
+    //                 unit_weight
+    //                 unit_weight_title
+    //                 is_discount
+    //                 discount
+    //                 ranking
+    //                 reorder_level
+    //                 is_active
+    //                 #tags {
+    //                 #}
+    //                 #order_details {
+    //                 #}
+    //             }
+    //         }
+    //     }
+    //     `;
+    
+    //     request(app.getHttpServer())
+    //     .post('/graphql')
+    //     .send({
+    //         operationName: null,
+    //         query: query
+    //     })
+    //     .set('Accept', 'application/json')
+    //     .expect(200)
+    //     .end((err, res) => {
+    
+    //         // console.log('<e111> err:', err);
+    //         console.log('<c1> res.body:', res.body);
+    
+    //         if(err) return done(err);
+        
+    //         expect(res.body).toBeInstanceOf(Object);
+    
+    //         const merchantCategory: MerchantCategory = res.body?.data?.build;
+            
+    //         expect(merchantCategory.id).toBe(1); 
+    //         // expect(merchantCategory.person_id).toBe(1); 
+    //         // expect(merchantCategory.person.person_name).toBe(pInput.person_name); 
+    //         expect(merchantCategory.category_name).toBe(qInput.category_name);
+    //         done();
+    
+    //     });
+    
+    // }, 20000);
+    
+    // #endregion
+
+    //#region  [2] ❌
+
+    // it('[2] freely choose witch parameter you want', async (done) => {  
+
+    //     const qInput: BuildMerchantCategoryInput = {
+    //         merchantCategory_name: "Gift Galery",
+    //         contact_name: "Davood",
+    //         contact_title: "Aqa",
+    //         logo: "galery.jpg",
+    //         note: "trusted",
+    //         our_id: "supp01",
+    //         url: "giftgallery.com"
+    //     }
+
+    //     const query = 
+    //     `
+    //     mutation {
+    //         build(merchantCategory: ${fixInput(qInput)}){
+                
+                
+    //             contact_name
+    //             contact_title
+    //             logo
+    //             note
+    //             our_id
+    //             url
+    //             person_id
+    //             person {
+    //                 person_id
+    //                 person_role
+    //                 person_name
+    //             }
+    //         }
+    //     }
+    //     `;
+    
+    //     request(app.getHttpServer())
+    //     .post('/graphql')
+    //     .send({
+    //         operationName: null,
+    //         query: query
+    //     })
+    //     .set('Accept', 'application/json')
+    //     .expect(200)
+    //     .end((err, res) => {
+    
+    //         // console.log('<e111> err:', err);
+    //         console.log('<c1> res.body:', res.body);
+    
+    //         if(err) return done(err);
+        
+    //         expect(res.body).toBeInstanceOf(Object);
+    
+    //         const merchantCategory = res.body?.data?.build;
+            
+    //         // expect(merchantCategory.merchantCategory_id).toBe(1); // 🚩Int => number | ID => String
+    //         expect(merchantCategory.person_id).toBe(1); 
+    //         expect(merchantCategory.person.person_name).toBe(qInput.merchantCategory_name); // ❓
+    //         // expect(merchantCategory.merchantCategory_name).toBe(qInput.merchantCategory_name);
+    //         done();
+    
+    //     });
+    
+    // }, 20000);  
+    
+    //#endregion
+  
+  });
+  
+  //#endregion
+  
+
+  //#region e
+
+  describe('[d] fetchById', () => {
+
+    //#region  [1] ✅
+
+    // it('[1] should get MerchantCategory by id()', async (done) => { 
+        
+    //     // 🚧 create person
+    //     // const pInput = CreatePersonInputs[0];
+    //     // const gPerson = await personRepository.build(pInput);
+        
+    //     // 🚧 create merchantCategory
+    //     const pcInput = BuildMerchantCategoryInputs[0];
+    //     const gMerchantCategory = await merchantCategoryRepository.build(pcInput);
+
+    //     const query = 
+    //     `
+    //     query {
+    //         fetchById(merchantCategory_id: ${1}){
+    //             id
+    //             category_name
+    //             category_description
+    //             children {
+    //                 id
+    //                 category_name
+    //                 category_description
+    //             }
+    //             parent {
+    //                 id
+    //                 category_name
+    //                 category_description
+    //             }
+    //             parentId
+    //             flag_merchant_id
+    //             flag_merchant {
+    //                 merchant_id
+    //                 sku
+    //                 supplier_sku
+    //                 #category
+    //                 #merchant_category_id
+    //                 merchant_name
+    //                 msrp
+    //                 price
+    //                 price_currency
+    //                 currency_symbole
+    //                 unit_title
+    //                 unit_weight
+    //                 unit_weight_title
+    //                 is_discount
+    //                 discount
+    //                 ranking
+    //                 reorder_level
+    //                 is_active
+    //                 #tags {
+    //                 #}
+    //                 #order_details {
+    //                 #}
+    //             }
+    //             picture_url
+    //             isActive
+    //             merchants {
+    //                 merchant_id
+    //                 sku
+    //                 supplier_sku
+    //                 #category
+    //                 #merchant_category_id
+    //                 merchant_name
+    //                 msrp
+    //                 price
+    //                 price_currency
+    //                 currency_symbole
+    //                 unit_title
+    //                 unit_weight
+    //                 unit_weight_title
+    //                 is_discount
+    //                 discount
+    //                 ranking
+    //                 reorder_level
+    //                 is_active
+    //                 #tags {
+    //                 #}
+    //                 #order_details {
+    //                 #}
+    //             }
+    //         }
+    //     }
+    //     `;
+    
+    //     request(app.getHttpServer())
+    //     .post('/graphql')
+    //     .send({
+    //         operationName: null,
+    //         query: query
+    //     })
+    //     .set('Accept', 'application/json')
+    //     .expect(200)
+    //     .end((err, res) => {
+    
+    //         // console.log('<e111> err:', err);
+    //         console.log('<c1> res.body:', res.body);
+    
+    //         if(err) return done(err);
+        
+    //         expect(res.body).toBeInstanceOf(Object);
+    
+    //         const merchantCategory: MerchantCategory = res.body?.data?.fetchById;
+            
+    //         expect(merchantCategory.id).toBe(1); 
+    //         expect(merchantCategory.category_name).toBe(pcInput.category_name); 
+    //         done();
+    
+    //     });
+    
+    // }, 20000);
+
+    
+    //#endregion
+    
+
+    //#region  [2] ❌
+
+    // it('[2] provided id is string though it must be number hence cannot POST graphql ', async (done) => {  
+
+    //     const sampleInput = MerchantCategorySampleInputs[0];
+    //     const gMerchantCategory = await merchantCategoryRepository.build(sampleInput);
+    //     expect(gMerchantCategory.merchantCategory_id).toEqual(1);
+
+    //     // const uInput: UpdateMerchantCategoryInput = {
+    //     //   merchantCategory_id: 1,
+    //     //   merchantCategory_name: "new name",
+    //     //   contact_name: "davood",
+    //     //   contact_title: "Mohandes",
+    //     //   logo: 'logo.jpg',
+    //     //   note: 'be careful',
+    //     //   our_id: "saeid",
+    //     //   url: "gift.gall",
+    //     // }
+        
+    //     const query = 
+    //     `
+    //     query {
+    //       fetchById(merchantCategory_id: "1"){
+    //         merchantCategory_id
+    //         merchantCategory_name
+    //         contact_name
+    //         contact_title
+    //         logo
+    //         note
+    //         our_id
+    //         url
+    //         person_id
+    //         person {
+    //           person_id
+    //           person_role
+    //           person_name
+    //         }
+    //       }
+    //     }
+    //     `;
+    
+    //     request(app.getHttpServer())
+    //     .post('/graphql')
+    //     .send({
+    //         operationName: null,
+    //         query: query
+    //     })
+    //     .set('Accept', 'application/json')
+    //     .expect(200)
+    //     .end((e, {body, error}) => {
+
+    //         console.log('<c10> e:', e);
+    //         // console.log('<c10> e.message:', e.message);
+
+    //         console.log('<c10> error:', error);
+    //         console.log('<c11> error.message:', error.message);
+    //         console.log('<c12> error.text:', error.text);
+    //         console.log('<c13> error.status:', error.status);
+
+    //         console.log('<c14> body:', body);
+
+    //         console.log('<c15> body.errors:', body?.errors);
+    //         console.log('<c16> JSON:body.errors:', JSON.stringify(body?.errors));
+    //         console.log('<c17> body.data:', body?.data);
+    //         console.log('<c18> body.data.rebuild:', body?.data?.rebuild);
+
+    //         expect(e.message).toEqual('expected 200 "OK", got 400 "Bad Request"');
+    //         // expect(e).toBeNull();
+            
+    //         expect(error.message).toEqual('cannot POST /graphql (400)');
+    //         // expect(error).toEqual(false);
+            
+    //         expect(body.data).toBeUndefined();
+
+    //         expect(body.errors).toBeInstanceOf(Array);
+    //         expect(body.errors.length).toEqual(1);
+    //         expect(body.errors[0].message).toEqual('Expected type Float!, found "1".');
+        
+    //         // const merchantCategory: MerchantCategory = body.data.fetchById;
+    //         // console.log('<e1|merchantCategory>', merchantCategory);
+    //         // expect(merchantCategory.merchantCategory_id).toEqual(1);
+    //         // expect(merchantCategory.merchantCategory_name).toEqual(sampleInput.merchantCategory_name);
+    //         done();
+    
+    //     });
+    
+    // }, 20000); 
+    
+    //#endregion
+
+
+    //#region  [3] ❌
+
+//     it('[3] merchantCategory_id unavailable hence body.data should be null and have body.errors ', async (done) => {  
+
+//       // const sampleInput = MerchantCategorySampleInputs[0];
+//       // const gMerchantCategory = await merchantCategoryRepository.build(sampleInput);
+//       // expect(gMerchantCategory.merchantCategory_id).toEqual(1);
+
+//       // const uInput: UpdateMerchantCategoryInput = {
+//       //   merchantCategory_id: 1,
+//       //   merchantCategory_name: "new name",
+//       //   contact_name: "davood",
+//       //   contact_title: "Mohandes",
+//       //   logo: 'logo.jpg',
+//       //   note: 'be careful',
+//       //   our_id: "saeid",
+//       //   url: "gift.gall",
+//       // }
+      
+//       const query = 
+//       `
+//       query {
+//         fetchById(merchantCategory_id: 1){
+//           merchantCategory_id
+//           merchantCategory_name
+//           contact_name
+//           contact_title
+//           logo
+//           note
+//           our_id
+//           url
+//           person_id
+//           person {
+//             person_id
+//             person_role
+//             person_name
+//           }
+//         }
+//       }
+//       `;
+  
+//       request(app.getHttpServer())
+//       .post('/graphql')
+//       .send({
+//           operationName: null,
+//           query: query
+//       })
+//       .set('Accept', 'application/json')
+//       .expect(200)
+//       .end((e, {body, error}) => {
+
+//           // console.log('<c10| e>', e);
+//           // console.log('<c10> e.message:', e.message);
+
+//           // console.log('<c10| error>', error);
+//           // console.log('<c11| error.message>', error.message);
+//           // console.log('<c12| error.text>', error.text);
+//           // console.log('<c13| error.status>', error.status);
+
+//           // console.log('<c14| body>', body);
+
+//           // console.log('<c15| body.errors>', body?.errors);
+//           // console.log('<c16| body.errors>', JSON.stringify(body?.errors));
+//           // console.log('<c17| body.data>', body?.data);
+//           // console.log('<c18| body.data.rebuild>', body?.data?.rebuild);
+
+//           // expect(e.message).toEqual('expected 200 "OK", got 400 "Bad Request"');
+//           expect(e).toBeNull();
+          
+//           // expect(error.message).toEqual('cannot POST /graphql (400)');
+//           expect(error).toEqual(false);
+          
+//           expect(body.data).toBeNull();
+
+//           expect(body.errors).toBeInstanceOf(Array);
+//           expect(body.errors.length).toEqual(1);
+//           expect(body.errors[0].message).toEqual('There is no merchantCategory with id 1');
+      
+//           // const merchantCategory: MerchantCategory = body.data.fetchById;
+//           // expect(merchantCategory).toBeNull();
+
+//           // console.log('<e1| merchantCategory>', merchantCategory);
+//           // expect(merchantCategory.merchantCategory_id).toEqual(1);
+//           // expect(merchantCategory.merchantCategory_name).toEqual(sampleInput.merchantCategory_name);
+//           done();
+  
+//       });
+  
+//   }, 20000); 
+  
+  //#endregion
+  
+
+    });
+  
+  //#endregion
+
+
+
+  //#region e
+
+  describe('[e] rebuild', () => {
+
+    //#region  [1] ✅
+    
+    // it('[1] should update MerchantCategory()', async (done) => { 
+        
+    //     // 🚧 create person
+    //     // const pInput = CreatePersonInputs[0];
+    //     // const gPerson = await personRepository.build(pInput);
+        
+    //     // 🚧 create merchantCategory
+    //     const cInput = BuildMerchantCategoryInputs[0];
+    //     const gMerchantCategory = await merchantCategoryRepository.build(cInput);
+
+    //     // 🚧 updating merchantCategory
+    //     const qInput: UpdateMerchantCategoryInput = UpdateMerchantCategoryInputs[0];
+
+    //     const query = 
+    //     `
+    //     mutation {
+    //         rebuild(merchantCategory: ${fixInput(qInput)}){
+    //             id
+    //             category_name
+    //             category_description
+    //             children {
+    //                 id
+    //                 category_name
+    //                 category_description
+    //             }
+    //             parent {
+    //                 id
+    //                 category_name
+    //                 category_description
+    //             }
+    //             parentId
+    //             flag_merchant_id
+    //             flag_merchant {
+    //                 merchant_id
+    //                 sku
+    //                 supplier_sku
+    //                 #category
+    //                 #merchant_category_id
+    //                 merchant_name
+    //                 msrp
+    //                 price
+    //                 price_currency
+    //                 currency_symbole
+    //                 unit_title
+    //                 unit_weight
+    //                 unit_weight_title
+    //                 is_discount
+    //                 discount
+    //                 ranking
+    //                 reorder_level
+    //                 is_active
+    //                 #tags {
+    //                 #}
+    //                 #order_details {
+    //                 #}
+    //             }
+    //             picture_url
+    //             isActive
+    //             merchants {
+    //                 merchant_id
+    //                 sku
+    //                 supplier_sku
+    //                 #category
+    //                 #merchant_category_id
+    //                 merchant_name
+    //                 msrp
+    //                 price
+    //                 price_currency
+    //                 currency_symbole
+    //                 unit_title
+    //                 unit_weight
+    //                 unit_weight_title
+    //                 is_discount
+    //                 discount
+    //                 ranking
+    //                 reorder_level
+    //                 is_active
+    //                 #tags {
+    //                 #}
+    //                 #order_details {
+    //                 #}
+    //             }
+    //         }
+    //     }
+    //     `;
+    
+    //     request(app.getHttpServer())
+    //     .post('/graphql')
+    //     .send({
+    //         operationName: null,
+    //         query: query
+    //     })
+    //     .set('Accept', 'application/json')
+    //     .expect(200)
+    //     .end((err, res) => {
+    
+    //         // console.log('<e111> err:', err);
+    //         console.log('<c1> res.body:', res.body);
+    
+    //         if(err) return done(err);
+        
+    //         expect(res.body).toBeInstanceOf(Object);
+    
+    //         const merchantCategory: MerchantCategory = res.body?.data?.rebuild;
+            
+    //         expect(merchantCategory.id).toBe(1); 
+    //         expect(merchantCategory.id).toBe(1); 
+    //         expect(merchantCategory.category_name).toBe(qInput.category_name); 
+    //         done();
+    
+    //     });
+    
+    // }, 20000);
+
+    //#endregion
+    
+    //#region  [2] ❌
+
+    // it('[2] send extra data hence we must have err and error', async (done) => {  
+
+    //     const sampleInput = MerchantCategorySampleInputs[0];
+    //     const gMerchantCategory = await merchantCategoryRepository.build(sampleInput);
+        
+    //     expect(gMerchantCategory.merchantCategory_id).toEqual(1);
+
+
+    //     const uInput: UpdateMerchantCategoryInput = {
+    //       ...gMerchantCategory, // 🚩 include person {} that is not defined in UpdateMerchantCategoryInput
+    //       merchantCategory_name: "new name",
+    //     }
+        
+    //     const query = 
+    //     `
+    //     mutation {
+    //       rebuild(merchantCategory: ${fixInput(uInput)}){
+    //         merchantCategory_id
+    //         merchantCategory_name
+    //         contact_name
+    //         contact_title
+    //         logo
+    //         note
+    //         our_id
+    //         url
+    //         person_id
+    //         person {
+    //           person_id
+    //           person_role
+    //           person_name
+    //         }
+    //       }
+    //     }
+    //     `;
+    
+    //     request(app.getHttpServer())
+    //     .post('/graphql')
+    //     .send({
+    //         operationName: null,
+    //         query: query
+    //     })
+    //     .set('Accept', 'application/json')
+    //     .expect(200)
+    //     .end((err, {body, error}) => {
+
+    //         console.log('<c10> err:', err);
+    //         console.log('<c10> err.message:', err.message);
+
+    //         console.log('<c10> error:', error);
+    //         console.log('<c11> error.message:', error.message);
+    //         console.log('<c12> error.text:', error.text);
+    //         console.log('<c13> error.status:', error.status);
+
+    //         console.log('<c14> body:', body);
+
+    //         console.log('<c15> body.errors:', body?.errors);
+    //         console.log('<c16> JSON:body.errors:', JSON.stringify(body?.errors));
+    //         console.log('<c17> body.data:', body?.data);
+    //         console.log('<c18> body.data.rebuild:', body?.data?.rebuild);
+
+    //         expect(err.message).toEqual('expected 200 "OK", got 400 "Bad Request"');
+            
+    //         expect(error.message).toEqual('cannot POST /graphql (400)');
+            
+    //         expect(body.errors).toBeInstanceOf(Array);
+    //         expect(body.errors.length).toEqual(2);
+        
+    //         expect(body.data).toBeUndefined();
+    //         done();
+    
+    //     });
+    
+    // }, 20000); 
+    
+    //#endregion
+    
+    //#region  [3] ❌
+
+    // it('[3] extra field in query hence cannot POST graphql', async (done) => {  
+
+    //     const sampleInput = MerchantCategorySampleInputs[0];
+    //     const gMerchantCategory = await merchantCategoryRepository.build(sampleInput);
+        
+    //     expect(gMerchantCategory.merchantCategory_id).toEqual(1);
+
+    //     const uInput: UpdateMerchantCategoryInput = {
+    //       merchantCategory_id: gMerchantCategory.merchantCategory_id,
+    //       merchantCategory_name: "new name",
+    //       contact_name: gMerchantCategory.contact_name,
+    //       contact_title: gMerchantCategory.contact_title,
+    //       logo: gMerchantCategory.logo,
+    //       note: gMerchantCategory.note,
+    //       our_id: gMerchantCategory.our_id,
+    //       url: gMerchantCategory.url,
+    //     }
+        
+    //     const query = 
+    //     `
+    //     mutation {
+    //       rebuild(merchantCategory: ${fixInput(uInput)}){
+    //         extrafield
+    //         merchantCategory_id
+    //         merchantCategory_name
+    //         contact_name
+    //         contact_title
+    //         logo
+    //         note
+    //         our_id
+    //         url
+    //         person_id
+    //         person {
+    //           person_id
+    //           person_role
+    //           person_name
+    //         }
+    //       }
+    //     }
+    //     `;
+    
+    //     request(app.getHttpServer())
+    //     .post('/graphql')
+    //     .send({
+    //         operationName: null,
+    //         query: query
+    //     })
+    //     .set('Accept', 'application/json')
+    //     .expect(200)
+    //     .end((e, {body, error}) => {
+
+    //         // console.log('<c10> e:', e);
+    //         // console.log('<c10> e.message:', e.message);
+
+    //         // console.log('<c10> error:', error);
+    //         // console.log('<c11> error.message:', error.message);
+    //         // console.log('<c12> error.text:', error.text);
+    //         // console.log('<c13> error.status:', error.status);
+
+    //         // console.log('<c14> body:', body);
+
+    //         // console.log('<c15> body.errors:', body?.errors);
+    //         // console.log('<c16> JSON:body.errors:', JSON.stringify(body?.errors));
+    //         // console.log('<c17> body.data:', body?.data);
+    //         // console.log('<c18> body.data.rebuild:', body?.data?.rebuild);
+
+    //         expect(e.message).toEqual('expected 200 "OK", got 400 "Bad Request"');
+            
+    //         expect(error.message).toEqual('cannot POST /graphql (400)');
+            
+    //         expect(body.errors).toBeInstanceOf(Array);
+    //         expect(body.errors.length).toEqual(1);
+    //         expect(body.errors[0].message).toEqual('Cannot query field "extrafield" on type "MerchantCategory".');
+        
+    //         expect(body.data).toBeUndefined();
+    //         done();
+    
+    //     });
+    
+    // }, 20000); 
+    
+    //#endregion
+    
+    //#region  [4] ❌
+
+    // it('[4] type in method-name hence cannot POST graphql', async (done) => {  
+
+    //     const sampleInput = MerchantCategorySampleInputs[0];
+    //     const gMerchantCategory = await merchantCategoryRepository.build(sampleInput);
+        
+    //     expect(gMerchantCategory.merchantCategory_id).toEqual(1);
+
+    //     const uInput: UpdateMerchantCategoryInput = {
+    //       merchantCategory_id: gMerchantCategory.merchantCategory_id,
+    //       merchantCategory_name: "new name",
+    //       contact_name: gMerchantCategory.contact_name,
+    //       contact_title: gMerchantCategory.contact_title,
+    //       logo: gMerchantCategory.logo,
+    //       note: gMerchantCategory.note,
+    //       our_id: gMerchantCategory.our_id,
+    //       url: gMerchantCategory.url,
+    //     }
+        
+    //     const query = 
+    //     `
+    //     mutation {
+    //       updateShip(merchantCategory: ${fixInput(uInput)}){
+    //         merchantCategory_id
+    //         merchantCategory_name
+    //         contact_name
+    //         contact_title
+    //         logo
+    //         note
+    //         our_id
+    //         url
+    //         person_id
+    //         person {
+    //           person_id
+    //           person_role
+    //           person_name
+    //         }
+    //       }
+    //     }
+    //     `;
+    
+    //     request(app.getHttpServer())
+    //     .post('/graphql')
+    //     .send({
+    //         operationName: null,
+    //         query: query
+    //     })
+    //     .set('Accept', 'application/json')
+    //     .expect(200)
+    //     .end((e, {body, error}) => {
+
+    //         // console.log('<c10> e:', e);
+    //         // console.log('<c10> e.message:', e.message);
+
+    //         // console.log('<c10> error:', error);
+    //         // console.log('<c11> error.message:', error.message);
+    //         // console.log('<c12> error.text:', error.text);
+    //         // console.log('<c13> error.status:', error.status);
+
+    //         // console.log('<c14> body:', body);
+
+    //         // console.log('<c15> body.errors:', body?.errors);
+    //         // console.log('<c16> JSON:body.errors:', JSON.stringify(body?.errors));
+    //         // console.log('<c17> body.data:', body?.data);
+    //         // console.log('<c18> body.data.rebuild:', body?.data?.rebuild);
+
+    //         expect(e.message).toEqual('expected 200 "OK", got 400 "Bad Request"');
+            
+    //         expect(error.message).toEqual('cannot POST /graphql (400)');
+            
+    //         expect(body.errors).toBeInstanceOf(Array);
+    //         expect(body.errors.length).toEqual(1);
+    //         expect(body.errors[0].message).toContain("Cannot query field \"updateShip\" on type \"Mutation\".");
+        
+    //         expect(body.data).toBeUndefined();
+    //         done();
+    
+    //     });
+    
+    // }, 20000); 
+    
+    //#endregion
+    
+    //#region  [5] ❌
+
+    // it('[5] no merchantCategory hence should throw error while updating', async (done) => {  
+
+    //     // const sampleInput = MerchantCategorySampleInputs[0];
+    //     // const gMerchantCategory = await merchantCategoryRepository.build(sampleInput);
+        
+    //     // expect(gMerchantCategory.merchantCategory_id).toEqual(1);
+
+    //     const uInput: UpdateMerchantCategoryInput = {
+    //       merchantCategory_id: 1,
+    //       merchantCategory_name: "new name",
+    //       contact_name: "davood",
+    //       contact_title: "Mohandes",
+    //       logo: 'logo.jpg',
+    //       note: 'be careful',
+    //       our_id: "saeid",
+    //       url: "gift.gall",
+    //     }
+        
+    //     const query = 
+    //     `
+    //     mutation {
+    //       rebuild(merchantCategory: ${fixInput(uInput)}){
+    //         merchantCategory_id
+    //         merchantCategory_name
+    //         contact_name
+    //         contact_title
+    //         logo
+    //         note
+    //         our_id
+    //         url
+    //         person_id
+    //         person {
+    //           person_id
+    //           person_role
+    //           person_name
+    //         }
+    //       }
+    //     }
+    //     `;
+    
+    //     request(app.getHttpServer())
+    //     .post('/graphql')
+    //     .send({
+    //         operationName: null,
+    //         query: query
+    //     })
+    //     .set('Accept', 'application/json')
+    //     .expect(200)
+    //     .end((e, {body, error}) => {
+
+    //         console.log('<c10> e:', e);
+    //         // console.log('<c10> e.message:', e.message);
+
+    //         console.log('<c10> error:', error);
+    //         console.log('<c11> error.message:', error.message);
+    //         console.log('<c12> error.text:', error.text);
+    //         console.log('<c13> error.status:', error.status);
+
+    //         console.log('<c14> body:', body);
+
+    //         console.log('<c15> body.errors:', body?.errors);
+    //         console.log('<c16> JSON:body.errors:', JSON.stringify(body?.errors));
+    //         console.log('<c17> body.data:', body?.data);
+    //         console.log('<c18> body.data.rebuild:', body?.data?.rebuild);
+
+    //         // expect(e.message).toEqual('expected 200 "OK", got 400 "Bad Request"');
+    //         expect(e).toBeNull();
+            
+    //         // expect(error.message).toEqual('cannot POST /graphql (400)');
+    //         expect(error).toEqual(false);
+            
+    //         expect(body.errors).toBeInstanceOf(Array);
+    //         expect(body.errors.length).toEqual(1);
+    //         expect(body.errors[0].message).toEqual('Could not find any entity of type "MerchantCategory" matching: 1');
+        
+    //         expect(body.data).toBeNull();
+    //         done();
+    
+    //     });
+    
+    // }, 20000); 
+    
+    //#endregion
+
+  
+  });
+  
+  //#endregion
+  
+  
+  
+});
+
+
+
+
+

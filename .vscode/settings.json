@@ -1,0 +1,23 @@
+{
+    "outline.showNull": false,
+    "material-icon-theme.hidesExplorerArrows": true,
+    "workbench.colorCustomizations": {
+        "activityBar.background": "#272e33",
+        "titleBar.activeBackground": "#111416",
+        "titleBar.activeForeground": "#e7e7e7",
+        "activityBar.activeBackground": "#272e33",
+        "activityBar.activeBorder": "#a73879",
+        "activityBar.foreground": "#e7e7e7",
+        "activityBar.inactiveForeground": "#e7e7e799",
+        "activityBarBadge.background": "#a73879",
+        "activityBarBadge.foreground": "#e7e7e7",
+        "statusBar.background": "#111416",
+        "statusBar.foreground": "#e7e7e7",
+        "statusBarItem.hoverBackground": "#272e33",
+        "titleBar.inactiveBackground": "#11141699",
+        "titleBar.inactiveForeground": "#e7e7e799"
+    },
+    "peacock.color": "#111416",
+    "editor.lineNumbers": "off",
+    "editor.glyphMargin": false
+}
